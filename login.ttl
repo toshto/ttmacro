@@ -1,0 +1,45 @@
+;----------
+;
+; TeraTerm Macro SSH
+;
+;----------
+
+;;; マクロの配置ディレクトリを取得
+getdir BASEDIR
+
+;;; 踏み台サーバを指定
+BASTION = 'bastion_server'
+
+;;; ログインユーザ名を指定
+USERNAME = 'your_name' 
+
+;;; ログインパスワードを指定
+PASSWORD = 'your_password'
+
+;;; 踏み台後のサーバを指定
+SRVNAME  = 'your_server'
+
+;;; ログイン後にsuするユーザとパスワードを指定
+SUSER = 'root'
+SUPASS= '********'
+
+;;; iniファイルを指定
+INI_FILE  = BASEDIR
+strconcat INI_FILE '\conf\dev.ini'
+
+;;; マクロ本体を指定
+MAIN_MACRO = 'lib\main.ttl'
+
+
+
+;----------
+;;; iniファイルのチェック
+filesearch INI_FILE
+if result=0 messagebox 'INI file not found.' 'error'
+
+;;; マクロ本体のチェック
+filesearch MAIN_MACRO
+if result=0 messagebox 'Main macro not found.' 'error'
+
+;----------
+include MAIN_MACRO

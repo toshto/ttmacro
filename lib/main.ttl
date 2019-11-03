@@ -1,0 +1,66 @@
+;----------
+; login settings
+;----------
+COMMAND = BASTION
+strconcat COMMAND ':22 /ssh /2 /auth=password'
+strconcat COMMAND ' /F='
+strconcat COMMAND INI_FILE
+strconcat COMMAND ' /user='
+strconcat COMMAND USERNAME
+strconcat COMMAND ' /passwd='
+strconcat COMMAND PASSWORD
+
+;----------
+; logopen <filename> <binary flag> <append flag> [<plain text flag> [<timestamp flag> [<hide dialog flag>]]]
+;----------
+
+getdate YYYYMMDD '%Y%m%d'
+getdate YYYYMMDDHHMMSS '%Y%m%d%H%M%S'
+
+LOGDIR = BASEDIR
+strconcat LOGDIR '\log\'
+strconcat LOGDIR YYYYMMDD
+foldercreate LOGDIR
+
+LOGFILE = LOGDIR
+strconcat LOGFILE '\'
+strconcat LOGFILE SRVNAME
+strconcat LOGFILE '_'
+strconcat LOGFILE YYYYMMDDHHMMSS
+strconcat LOGFILE '.log'
+logopen LOGFILE 0 1 1 1 1
+if result = 0 then
+	;ログオープン成功
+else
+	messagebox 'ログファイルが開けません。' 'Error'
+endif
+
+;----------
+; start login
+;----------
+connect COMMAND
+wait '$'
+
+;----------
+; second login
+;----------
+
+TELNET_CMD = "telnet -a "
+strconcat TELNET_CMD SRVNAME
+sendln TELNET_CMD
+
+wait 'Password:'
+sendln PASSWORD
+
+wait '$'
+SUCMD = 'sudo -H -u '
+strconcat SUCMD SUSER
+strconcat SUCMD ' /bin/bash -login'
+sendln SUCMD
+wait '[sudo]'
+sendln PASSWORD
+wait '#'
+sendln 'id'
+
+end
+
